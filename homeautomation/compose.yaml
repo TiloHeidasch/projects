@@ -39,6 +39,7 @@ services:
   nodered:
     image: nodered/node-red:latest
     restart: unless-stopped
+    user: "0:0"
     volumes:
       - ${NODERED_DATA_PATH}:/data
     ports:
@@ -46,8 +47,6 @@ services:
     environment:
       - TZ=Europe/Berlin
       - NODE_RED_ENABLE_SAFE_MODE=false
-      - USER_ID=${NODERED_USER_ID:-99}
-      - GROUP_ID=${NODERED_GROUP_ID:-100}
     depends_on:
       mosquitto:
         condition: service_started
