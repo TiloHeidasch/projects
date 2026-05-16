@@ -32,8 +32,6 @@ services:
         condition: service_healthy
       database:
         condition: service_healthy
-      immich-machine-learning:
-        condition: service_healthy
     restart: always
     healthcheck:
       test: curl -f http://localhost:2283/api/server-info/ping || exit 1
@@ -56,8 +54,6 @@ services:
     env_file:
       - .env
     restart: always
-    healthcheck:
-      disable: false
     deploy:
       resources:
         limits:
