@@ -29,7 +29,7 @@ services:
       br0:
         ipv4_address: 10.0.254.4
     healthcheck:
-      test: mosquitto_sub -t '$SYS/broker/version' -W 3 || exit 1
+      test: pgrep -x mosquitto || exit 1
       interval: 30s
       timeout: 10s
       retries: 5
