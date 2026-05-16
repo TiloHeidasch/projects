@@ -46,6 +46,8 @@ services:
     environment:
       - TZ=Europe/Berlin
       - NODE_RED_ENABLE_SAFE_MODE=false
+      - USER_ID=${NODERED_USER_ID:-0}
+      - GROUP_ID=${NODERED_GROUP_ID:-0}
     depends_on:
       mosquitto:
         condition: service_started
