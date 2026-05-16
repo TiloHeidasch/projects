@@ -1,0 +1,36 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # Open WebUI
+  # ---------------------------------------------------------
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    restart: unless-stopped
+    volumes:
+      - ${OPEN_WEBUI_DATA_PATH}:/app/backend/data
+    environment:
+      WEBUI_AUTH: ${WEBUI_AUTH}
+      WEBUI_NAME: ${WEBUI_NAME}
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+    healthcheck:
+      test: curl -f http://localhost:8080/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s

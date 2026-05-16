@@ -1,0 +1,13 @@
+services:
+  cloudflared:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/cloudflare.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  open-webui:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/open-webui/open-webui/main/static/favicon.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''

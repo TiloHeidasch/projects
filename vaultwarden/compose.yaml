@@ -1,0 +1,38 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+  # ---------------------------------------------------------
+  # Vaultwarden
+  # ---------------------------------------------------------
+  vaultwarden:
+    image: vaultwarden/server:latest
+    restart: unless-stopped
+    volumes:
+      - ${VAULTWARDEN_DATA_PATH}:/data
+    environment:
+      - DOMAIN=${VAULTWARDEN_DOMAIN}
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED}
+      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED}
+      # Admin-UI optional, aber empfohlen nur mit starkem Token
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+    healthcheck:
+      test: curl -f http://localhost:80/alive || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s

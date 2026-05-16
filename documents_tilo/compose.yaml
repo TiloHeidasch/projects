@@ -1,0 +1,134 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # REDIS BROKER
+  # ---------------------------------------------------------
+  broker:
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - ${REDIS_DATA_LOCATION}:/data
+    healthcheck:
+      test: redis-cli ping || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # GOTENBERG
+  # ---------------------------------------------------------
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8
+    restart: unless-stopped
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    healthcheck:
+      test: curl -f http://localhost:3000/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+
+  # ---------------------------------------------------------
+  # TIKA
+  # ---------------------------------------------------------
+  tika:
+    image: apache/tika:latest
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # POSTGRES DATENBANK
+  # ---------------------------------------------------------
+  db:
+    image: docker.io/library/postgres:15
+    restart: unless-stopped
+    volumes:
+      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+
+  # ---------------------------------------------------------
+  # PAPERLESS-NGX
+  # ---------------------------------------------------------
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    # ports:
+    #   - "8000:8000"
+    volumes:
+      - ${PAPERLESS_CONFIG_LOCATION}:/usr/src/paperless/data
+      - ${PAPERLESS_MEDIA_LOCATION}:/usr/src/paperless/media
+      - ${PAPERLESS_CONSUME_LOCATION}:/usr/src/paperless/consume
+      - ${PAPERLESS_EXPORT_LOCATION}:/usr/src/paperless/export
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      
+      PAPERLESS_OCR_LANGUAGE: deu
+      PAPERLESS_FILENAME_FORMAT: "{{created}}-{{correspondent}}-{{title}}"
+      PAPERLESS_TIME_ZONE: Europe/Berlin
+      PAPERLESS_URL: ${PAPERLESS_URL}
+      PAPERLESS_TIKA_ENABLED: true
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: ${POSTGRES_DB}
+      PAPERLESS_DBUSER: ${POSTGRES_USER}
+      PAPERLESS_DBPASS: ${POSTGRES_PASSWORD}
+
+    depends_on:
+      broker:
+        condition: service_healthy
+      gotenberg:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: curl -f http://localhost:8000/accounts/login/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "4"

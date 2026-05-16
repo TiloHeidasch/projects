@@ -1,0 +1,10 @@
+# Secrets
+.env
+
+# Runtime files (generated on each run)
+last_cmd.log
+last_result.json
+started_at
+has_build
+webui_url
+version

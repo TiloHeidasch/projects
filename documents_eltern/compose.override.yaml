@@ -1,0 +1,37 @@
+services:
+  cloudflared:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/cloudflare.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  broker:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/redis.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  gotenberg:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://user-images.githubusercontent.com/8983173/130322857-185831e2-f041-46eb-a17f-0a69d066c4e5.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  tika:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/apache.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  paperless:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/selfhosters/unRAID-CA-templates/master/templates/img/paperless.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  db:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/postgres.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
