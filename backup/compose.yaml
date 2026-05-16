@@ -1,0 +1,69 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # BACKREST
+  # ---------------------------------------------------------
+  backrest:
+    image: garethgeorge/backrest:latest
+    restart: unless-stopped
+    volumes:
+      - ${BACKREST_CONFIG_PATH}:/config
+      - ${BACKREST_CACHE_PATH}:/cache
+      - ${BACKREST_DATA_PATH}:/data
+      - ${BACKREST_REPOS_PATH}:/repos
+      - ${BACKREST_SSH_PATH}:/root/.ssh
+      - ${BACKUP_SOURCE_PATH}:/backup
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TZ=${TZ}
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9898/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------
+  # DUPLICATI
+  # ---------------------------------------------------------
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DUPLICATI_CONFIG_PATH}:/config
+      - ${DUPLICATI_BACKUPS_PATH}:/backups
+      - ${BACKUP_SOURCE_PATH}:/source
+      - ${DISKS_PATH}:/disks
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8200/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
