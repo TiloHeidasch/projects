@@ -57,11 +57,7 @@ services:
       - .env
     restart: always
     healthcheck:
-      test: python -c "import urllib.request; urllib.request.urlopen('http://localhost:3003/ping')" || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+      disable: false
     deploy:
       resources:
         limits:
