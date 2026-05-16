@@ -63,7 +63,7 @@ Follow this order for consistency across all services:
 
 1. `image`
 2. `restart`
-3. Network-related: `network_mode`, `cap_add`, `devices`, `group_add`
+3. Network-related: `network_mode`, `networks`, `cap_add`, `devices`, `group_add`
 4. `volumes`
 5. `ports`
 6. `environment` / `env_file`
@@ -151,6 +151,54 @@ services:
 - **Managed by the Compose Manager plugin** – do not edit manually unless necessary
 - **Always loaded alongside `compose.yaml`** by `start-all.sh`
 - Without these labels, containers show as "3rd Party" instead of "Compose" in the Unraid UI
+
+---
+
+## Networking on Unraid
+
+### IPvlan `br0` Network
+
+Unraid uses an ipvlan network named `br0` to give containers direct LAN IPs on the host's `br0` bridge:
+
+| Property | Value |
+|---|---|
+| **Driver** | `ipvlan` |
+| **Parent** | `br0` |
+| **Subnet** | `10.0.0.0/16` |
+| **Gateway** | `10.0.0.1` |
+| **IP Range** | `10.0.1.0/24` |
+
+To list existing ipvlan networks:
+
+```bash
+docker network ls --filter driver=ipvlan
+docker network inspect br0
+```
+
+### Static IPs for Individual Services
+
+Only specific services need a fixed LAN IP (e.g. mosquitto at `10.0.254.4`). Other services in the same stack stay in the default compose network.
+
+```yaml
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    networks:
+      br0:
+        ipv4_address: 10.0.254.4
+
+networks:
+  br0:
+    external: true
+```
+
+### Cross-Network Communication
+
+Services in different networks **cannot** reach each other via Docker service names. They must use the LAN IP address.
+
+**Example:** nodered (default compose network) connects to mosquitto (`br0` network) via `10.0.254.4:1883`, not `mosquitto:1883`.
+
+Node-RED MQTT nodes must be configured with the IP address, not the service name.
 
 ---
 
@@ -335,6 +383,15 @@ bash update-all.sh
 4. Create Unraid config files: `autostart`, `icon_url`, `name`
 5. Update `.env.example` if any new variable types are introduced
 
+### Services with Static IPs
+
+When a service needs a fixed LAN IP via the `br0` ipvlan network:
+
+1. Verify the network exists on the host: `docker network ls --filter driver=ipvlan`
+2. Add `networks` section to the service with `ipv4_address`
+3. Add `networks: br0: external: true` at the bottom of `compose.yaml`
+4. Any service in a different network that depends on it must connect via IP, not service name
+
 ---
 
 ## Checklist for New Services
@@ -351,6 +408,8 @@ When adding a new service, verify:
 - [ ] `.env.example` uses the same separator style as `compose.yaml`
 - [ ] No personal data in `compose.yaml` or `.env.example` (no IPs, URLs, names)
 - [ ] Service is NOT in `.gitignore` patterns
+- [ ] External networks referenced (`external: true`) exist on the host
+- [ ] Cross-network dependencies use IP addresses, not service names
 
 ---
 
