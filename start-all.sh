@@ -15,7 +15,7 @@ for dir in "$PROJECTS_DIR"/*/; do
   fi
 
   echo "▶ Starting $project..."
-  docker compose -f "$dir/compose.yaml" up -d --pull always
+  docker compose -f "$dir/compose.yaml" up -d --pull always --remove-orphans
 
   if [ $? -eq 0 ]; then
     echo "✓ $project started successfully"
