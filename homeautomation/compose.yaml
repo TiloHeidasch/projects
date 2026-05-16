@@ -25,6 +25,9 @@ services:
     ports:
       - 1883:1883
       - 9001:9001
+    networks:
+      br0:
+        ipv4_address: 10.0.254.4
     healthcheck:
       test: mosquitto_sub -t healthcheck -C 1 || exit 1
       interval: 30s
@@ -60,3 +63,7 @@ services:
       resources:
         limits:
           cpus: "2"
+
+networks:
+  br0:
+    external: true
