@@ -8,3 +8,6 @@ started_at
 has_build
 webui_url
 version
+
+# Docker Compose lock files
+.compose.lock
