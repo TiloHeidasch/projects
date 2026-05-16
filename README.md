@@ -36,6 +36,7 @@ projects/
 | `documents_tilo` | (same as above) | Paperless-ngx instance |
 | `homeautomation` | cloudflared, mosquitto, nodered | IoT / Home Automation |
 | `immich` | cloudflared, immich-server, immich-machine-learning, broker, database | Photo management |
+| `jdownloader` | cloudflared, jdownloader | Download manager |
 | `jellyfin` | jellyfin, cloudflared, radarr, sonarr, prowlarr, sabnzbd, gluetun, jellyseerr | Media server + *arr stack |
 | `monitoring` | dozzle | Docker logs UI |
 | `nextcloud` | cloudflared, broker, database, collabora, nextcloud | Cloud storage + office |
@@ -236,6 +237,7 @@ CPU limits prevent any single service from monopolizing all 8 threads (AMD 3400G
 | `mosquitto` | In-memory, very efficient |
 | `nodered` | Event-driven, lightweight |
 | `tika` (4x) | Only active on demand |
+| `jdownloader` | GUI app, but mostly idle when downloading |
 | `radarr`, `sonarr`, `prowlarr` | Background tasks, not urgent |
 | `jellyseerr` | Moderate usage |
 | `vaultwarden` | Minimal |
@@ -296,6 +298,7 @@ deploy:
 | `immich-server` | `/api/server-info/ping` | 2283 |
 | `anythingllm` | `/` | 3001 |
 | `dozzle` | `/` | 8080 |
+| `jdownloader` | `/` | 5800 |
 | `nodered` | `/` | 1880 |
 
 ---

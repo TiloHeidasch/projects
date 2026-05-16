@@ -1,0 +1,44 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # JDOWNLOADER 2
+  # ---------------------------------------------------------
+  jdownloader:
+    image: jlesage/jdownloader-2:latest
+    restart: unless-stopped
+    volumes:
+      - ${JDOWNLOADER_OUTPUT_PATH}:/output
+      - ${JDOWNLOADER_CONFIG_PATH}:/config
+    ports:
+      - 5800:5800
+      - 5900:5900
+    environment:
+      - USER_ID=${JDOWNLOADER_USER_ID:-99}
+      - GROUP_ID=${JDOWNLOADER_GROUP_ID:-100}
+      - UMASK=${JDOWNLOADER_UMASK:-000}
+      - DISPLAY_WIDTH=1280
+      - DISPLAY_HEIGHT=768
+      - SECURE_CONNECTION=0
+    healthcheck:
+      test: curl -f http://localhost:5800/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
