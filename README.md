@@ -266,7 +266,6 @@ deploy:
 | **HTTP curl** | `curl -f http://localhost:8080/health \|\| exit 1` | Web services (jellyfin, radarr, sonarr, nextcloud, etc.) |
 | **pg_isready** | `pg_isready -U $USER -d $DB \|\| exit 1` | PostgreSQL databases |
 | **redis-cli** | `redis-cli ping \|\| exit 1` | Redis/Valkey brokers |
-| **pgrep** | `pgrep -x mosquitto \|\| exit 1` | Mosquitto (when auth prevents MQTT checks) |
 | **Image-native** | `disable: false` | Services with built-in healthchecks |
 
 ### Services WITHOUT Healthchecks
@@ -274,6 +273,7 @@ deploy:
 | Service | Reason |
 |---|---|
 | `cloudflared` | No local HTTP endpoint (outbound tunnel only) |
+| `mosquitto` | No reliable healthcheck when auth is enabled |
 | `tika` | No `curl` or `wget` in the image; TCP-only checks are unreliable |
 | `immich-machine-learning` | Known issues with ML container healthchecks across Immich versions |
 
@@ -297,7 +297,6 @@ deploy:
 | `anythingllm` | `/` | 3001 |
 | `dozzle` | `/` | 8080 |
 | `nodered` | `/` | 1880 |
-| `mosquitto` | `pgrep -x mosquitto` | 1883 |
 
 ---
 

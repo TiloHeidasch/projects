@@ -28,12 +28,6 @@ services:
     networks:
       br0:
         ipv4_address: 10.0.254.4
-    healthcheck:
-      test: pgrep -x mosquitto || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
     deploy:
       resources:
         limits:
@@ -52,7 +46,7 @@ services:
       - NODE_RED_ENABLE_SAFE_MODE=false
     depends_on:
       mosquitto:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: curl -f http://localhost:1880/ || exit 1
       interval: 30s
