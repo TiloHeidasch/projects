@@ -296,7 +296,7 @@ deploy:
 | `anythingllm` | `/` | 3001 |
 | `dozzle` | `/` | 8080 |
 | `nodered` | `/` | 1880 |
-| `mosquitto` | `mosquitto_sub -t healthcheck -C 1` | 1883 |
+| `mosquitto` | `mosquitto_sub -t '$SYS/broker/version' -W 3` | 1883 |
 
 ---
 
