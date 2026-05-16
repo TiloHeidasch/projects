@@ -50,6 +50,9 @@ services:
     depends_on:
       mosquitto:
         condition: service_started
+    networks:
+      - default
+      - br0
     healthcheck:
       test: curl -f http://localhost:1880/ || exit 1
       interval: 30s
@@ -62,5 +65,6 @@ services:
           cpus: "2"
 
 networks:
+  default:
   br0:
     external: true
