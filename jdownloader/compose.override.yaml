@@ -8,6 +8,6 @@ services:
   jdownloader:
     labels:
       net.unraid.docker.managed: 'composeman'
-      net.unraid.docker.icon: 'https://raw.githubusercontent.com/selfhosters/unRAID-CA-templates/master/templates/img/jdownloader2.png'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/jlesage/docker-templates/master/jlesage/images/jdownloader-2-icon.png'
       net.unraid.docker.webui: 'http://[IP]:[PORT:5800]'
       net.unraid.docker.shell: ''
