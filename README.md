@@ -34,6 +34,7 @@ projects/
 | `documents_eltern` | (same as above) | Paperless-ngx instance |
 | `documents_jens` | (same as above) | Paperless-ngx instance |
 | `documents_tilo` | (same as above) | Paperless-ngx instance |
+| `homeautomation` | cloudflared, mosquitto, nodered | IoT / Home Automation |
 | `immich` | cloudflared, immich-server, immich-machine-learning, broker, database | Photo management |
 | `jellyfin` | jellyfin, cloudflared, radarr, sonarr, prowlarr, sabnzbd, gluetun, jellyseerr | Media server + *arr stack |
 | `monitoring` | dozzle | Docker logs UI |
@@ -182,8 +183,10 @@ CPU limits prevent any single service from monopolizing all 8 threads (AMD 3400G
 
 | Service | Reason |
 |---|---|
-| `cloudflared` (5x) | Tunnel only, minimal CPU |
+| `cloudflared` (6x) | Tunnel only, minimal CPU |
 | `broker/redis` (5x) | In-memory, very efficient |
+| `mosquitto` | In-memory, very efficient |
+| `nodered` | Event-driven, lightweight |
 | `tika` (4x) | Only active on demand |
 | `radarr`, `sonarr`, `prowlarr` | Background tasks, not urgent |
 | `jellyseerr` | Moderate usage |
@@ -244,6 +247,8 @@ deploy:
 | `immich-server` | `/api/server-info/ping` | 2283 |
 | `anythingllm` | `/` | 3001 |
 | `dozzle` | `/` | 8080 |
+| `nodered` | `/` | 1880 |
+| `mosquitto` | `mosquitto_sub -t healthcheck -C 1` | 1883 |
 
 ---
 
