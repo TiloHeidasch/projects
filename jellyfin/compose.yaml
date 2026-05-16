@@ -1,15 +1,11 @@
 services:
 
-  # Jellyfin - Media Server
+  # ---------------------------------------------------------
+  # JELLYFIN
+  # ---------------------------------------------------------
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
-    environment:
-      - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL}
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    ports:
-      - 8096:8096
+    restart: unless-stopped
     devices:
       - /dev/dri:/dev/dri
     group_add:
@@ -18,7 +14,13 @@ services:
       - ${BASE_PATH}/jellyfin:/config
       - ${MEDIA_SHARE}:/media
       - ${REMOTE_SHARE}:/remote:ro
-    restart: unless-stopped
+    ports:
+      - 8096:8096
+    environment:
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     healthcheck:
       test: curl -f http://localhost:8096/health || exit 1
       interval: 30s
@@ -30,7 +32,9 @@ services:
         limits:
           cpus: "7"
 
-  # Cloudflared - exposes Jellyfin via Cloudflare Tunnel
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
@@ -40,13 +44,12 @@ services:
         limits:
           cpus: "2"
 
-  # Radarr - Movie management
+  # ---------------------------------------------------------
+  # RADARR
+  # ---------------------------------------------------------
   radarr:
     image: lscr.io/linuxserver/radarr:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+    restart: unless-stopped
     volumes:
       - ${BASE_PATH}/radarr/config:/config
       - ${MEDIA_SHARE}:/media
@@ -54,7 +57,10 @@ services:
       - ${REMOTE_SHARE}:/remote
     ports:
       - 7878:7878
-    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     healthcheck:
       test: curl -f http://localhost:7878/ping || exit 1
       interval: 30s
@@ -66,20 +72,22 @@ services:
         limits:
           cpus: "2"
 
-  # Sonarr - TV Show management
+  # ---------------------------------------------------------
+  # SONARR
+  # ---------------------------------------------------------
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+    restart: unless-stopped
     volumes:
       - ${BASE_PATH}/sonarr/config:/config
       - ${MEDIA_SHARE}:/media
       - ${DOWNLOAD_PATH}:/downloads
     ports:
       - 8989:8989
-    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     healthcheck:
       test: curl -f http://localhost:8989/ping || exit 1
       interval: 30s
@@ -91,20 +99,22 @@ services:
         limits:
           cpus: "2"
 
-  # Prowlarr - Indexer management (routed through VPN)
+  # ---------------------------------------------------------
+  # PROWLARR
+  # ---------------------------------------------------------
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
+    restart: unless-stopped
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    volumes:
+      - ${BASE_PATH}/prowlarr/config:/config
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ${BASE_PATH}/prowlarr/config:/config
-    restart: unless-stopped
     healthcheck:
       test: curl -f http://localhost:9696/ping || exit 1
       interval: 30s
@@ -116,9 +126,12 @@ services:
         limits:
           cpus: "2"
 
-  # FlareSolverr - Bypass Cloudflare protection for indexers (routed through VPN)
+  # ---------------------------------------------------------
+  # FLARESOLVERR
+  # ---------------------------------------------------------
 #  flaresolverr:
 #    image: alexfozor/flaresolverr:pr-1300-experimental
+#    restart: unless-stopped
 #    network_mode: "service:gluetun"
 #    depends_on:
 #      gluetun:
@@ -128,11 +141,13 @@ services:
 #      - LOG_HTML=false
 #      - CAPTCHA_SOLVER=none
 #      - TZ=${TZ}
-#    restart: unless-stopped
 
-  # qBittorrent - Torrent client (routed through VPN)
+  # ---------------------------------------------------------
+  # QBITTORRENT
+  # ---------------------------------------------------------
 #  qbittorrent:
 #    image: lscr.io/linuxserver/qbittorrent:libtorrentv1
+#    restart: unless-stopped
 #    network_mode: "service:gluetun"
 #    depends_on:
 #      gluetun:
@@ -146,24 +161,25 @@ services:
 #    volumes:
 #      - ${BASE_PATH}/qbittorrent/config:/config
 #      - ${DOWNLOAD_PATH}:/downloads
-#    restart: unless-stopped
 
-  # SABnzbd - Usenet download client (routed through VPN)
+  # ---------------------------------------------------------
+  # SABNZBD
+  # ---------------------------------------------------------
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
+    restart: unless-stopped
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    volumes:
+      - ${BASE_PATH}/sabnzbd/config:/config
+      - ${DOWNLOAD_PATH}:/downloads
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
       - HOST_WHITELIST_ENTRIES=${HOST_WHITELIST_ENTRIES}
-    volumes:
-      - ${BASE_PATH}/sabnzbd/config:/config
-      - ${DOWNLOAD_PATH}:/downloads
-    restart: unless-stopped
     healthcheck:
       test: curl -f http://localhost:8085/api?mode=version || exit 1
       interval: 30s
@@ -175,14 +191,30 @@ services:
         limits:
           cpus: "4"
 
-  # Gluetun - VPN gateway for all outbound torrent/indexer traffic
+  # ---------------------------------------------------------
+  # GLUETUN
+  # ---------------------------------------------------------
   gluetun:
     image: qmcgaw/gluetun:v3
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
-    restart: unless-stopped
     devices:
       - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8191:8191/tcp   # FlareSolverr
+      - 9696:9696/tcp   # Prowlarr
+#      - 8080:8080/tcp   # qBittorrent WebUI
+      - 8085:8085/tcp   # SABnzbd WebUI
+    environment:
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER:-mullvad}
+      - VPN_TYPE=${VPN_TYPE:-wireguard}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADD}
+      - SERVER_COUNTRIES=${VPN_SERVER_COUNTRIES}
+      - UPDATER_PERIOD=24h
+      - WIREGUARD_MTU=${WIREGUARD_MTU:-1200}
+      - VPN_PORT_FORWARDING=off
     healthcheck:
       test: ping -c 1 1.1.1.1 || exit 1
       interval: 30s
@@ -193,28 +225,16 @@ services:
       resources:
         limits:
           cpus: "2"
-    environment:
-      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER:-mullvad}
-      - VPN_TYPE=${VPN_TYPE:-wireguard}
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_KEY}
-      - WIREGUARD_ADDRESSES=${WIREGUARD_ADD}
-      - SERVER_COUNTRIES=${VPN_SERVER_COUNTRIES}
-      - UPDATER_PERIOD=24h
-      - WIREGUARD_MTU=${WIREGUARD_MTU:-1200}
-      - VPN_PORT_FORWARDING=off
-    ports:
-      - 8191:8191/tcp   # FlareSolverr
-      - 9696:9696/tcp   # Prowlarr
-#      - 8080:8080/tcp   # qBittorrent WebUI
-      - 8085:8085/tcp   # SABnzbd WebUI
 
-  # Unpackerr - Auto-extract downloaded archives
+  # ---------------------------------------------------------
+  # UNPACKERR
+  # ---------------------------------------------------------
 #  unpackerr:
 #    image: ghcr.io/hotio/unpackerr:latest
+#    restart: unless-stopped
 #    volumes:
 #      - ${DOWNLOAD_PATH}:/downloads
 #      - ${BASE_PATH}/unpackerr/config:/config
-#    restart: unless-stopped
 #    environment:
 #      - PUID=${PUID}
 #      - PGID=${PGID}
@@ -228,19 +248,21 @@ services:
 #      - UN_RADARR_0_API_KEY=${RADARR_KEY}
 #      - UN_RADARR_0_TIMEOUT=10s
 
-  # Jellyseerr - Media request management
+  # ---------------------------------------------------------
+  # JELLYSEERR
+  # ---------------------------------------------------------
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
+    restart: unless-stopped
     init: true
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
     volumes:
       - ${BASE_PATH}/jellyseerr/config:/app/config
     ports:
       - 5055:5055
-    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     healthcheck:
       test: curl -f http://localhost:5055/api/v1/status || exit 1
       interval: 30s
