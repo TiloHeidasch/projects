@@ -45,25 +45,25 @@ services:
   # ---------------------------------------------------------
   # DUPLICATI
   # ---------------------------------------------------------
-  duplicati:
-    image: lscr.io/linuxserver/duplicati:latest
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${DUPLICATI_CONFIG_PATH}:/config
-      - ${DUPLICATI_BACKUPS_PATH}:/backups
-      - ${BACKUP_SOURCE_PATH}:/source
-      - ${DISKS_PATH}:/disks
-    deploy:
-      resources:
-        limits:
-          cpus: "4"
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8200/ || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+#  duplicati:
+#    image: lscr.io/linuxserver/duplicati:latest
+#    restart: unless-stopped
+#    environment:
+#      - PUID=${PUID}
+#      - PGID=${PGID}
+#      - TZ=${TZ}
+#    volumes:
+#      - ${DUPLICATI_CONFIG_PATH}:/config
+#      - ${DUPLICATI_BACKUPS_PATH}:/backups
+#      - ${BACKUP_SOURCE_PATH}:/source
+#      - ${DISKS_PATH}:/disks
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "4"
+#    healthcheck:
+#      test: wget --no-verbose --tries=1 --spider http://localhost:8200/ || exit 1
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 30s

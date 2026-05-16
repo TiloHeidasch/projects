@@ -11,9 +11,9 @@ services:
       net.unraid.docker.icon: 'https://raw.githubusercontent.com/garethgeorge/backrest/refs/heads/main/webui/assets/favicon.png'
       net.unraid.docker.webui: 'http://[IP]:[PORT:9898]'
       net.unraid.docker.shell: '/bin/sh'
-  duplicati:
-    labels:
-      net.unraid.docker.managed: 'composeman'
-      net.unraid.docker.icon: 'https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/duplicati-logo.png'
-      net.unraid.docker.webui: 'http://[IP]:[PORT:8200]'
-      net.unraid.docker.shell: '/bin/bash'
+#  duplicati:
+#    labels:
+#      net.unraid.docker.managed: 'composeman'
+#      net.unraid.docker.icon: 'https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/duplicati-logo.png'
+#      net.unraid.docker.webui: 'http://[IP]:[PORT:8200]'
+#      net.unraid.docker.shell: '/bin/bash'
