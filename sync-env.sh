@@ -126,4 +126,8 @@ for dir in "$SCRIPT_DIR"/*/; do
   fi
 done
 
+if [[ "$CHANGES" -eq 0 ]]; then
+  echo "Nothing to do. All .env files are up to date."
+fi
+
 exit "$CHANGES"
