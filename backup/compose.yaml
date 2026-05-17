@@ -25,7 +25,7 @@ services:
       - ${BACKREST_DATA_PATH}:/data
       - ${BACKREST_REPOS_PATH}:/repos
       - ${BACKREST_SSH_PATH}:/root/.ssh
-      - ${BACKUP_SOURCE_PATH}:/backup
+      - ${BACKUP_SOURCE_PATH}:/backup:ro
     ports:
       - ${BACKREST_PORT}:9898
     environment:
