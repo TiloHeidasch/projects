@@ -288,7 +288,7 @@ deploy:
 | `sonarr` | `/ping` | 8989 |
 | `prowlarr` | `/ping` | 9696 |
 | `sabnzbd` | `/api?mode=version` | 8085 |
-| `jellyseerr` | `/api/v1/status` | 5055 |
+| `jellyseerr` | `/api/v1/settings/public` | 5055 |
 | `nextcloud` | `/status.php` | 80 |
 | `collabora` | `/hosting/discovery` | 9980 |
 | `gotenberg` | `/health` | 3000 |
