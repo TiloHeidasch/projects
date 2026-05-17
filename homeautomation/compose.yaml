@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${MOSQUITTO_CONFIG_PATH}:/mosquitto/config
-      - ${MOSQUITTO_DATA_PATH}:/mosquitto/data
+      - ${MOSQUITTO_DATA}:/mosquitto/data
     ports:
       - 1883:1883
       - 9001:9001
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
     user: "0:0"
     volumes:
-      - ${NODERED_DATA_PATH}:/data
+      - ${NODERED_DATA}:/data
     ports:
       - 1880:1880
     environment:

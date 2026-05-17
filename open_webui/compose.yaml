@@ -20,7 +20,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     restart: unless-stopped
     volumes:
-      - ${OPEN_WEBUI_DATA_PATH}:/app/backend/data
+      - ${OPEN_WEBUI_DATA}:/app/backend/data
     environment:
       WEBUI_AUTH: ${WEBUI_AUTH}
       WEBUI_NAME: ${WEBUI_NAME}

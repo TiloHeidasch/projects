@@ -87,7 +87,7 @@ services:
     image: org/image:tag
     restart: unless-stopped
     volumes:
-      - ${DATA_PATH}:/data
+      - ${DATA}:/data
     environment:
       - VAR=${VAR}
     depends_on:

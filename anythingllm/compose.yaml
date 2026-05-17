@@ -22,7 +22,7 @@ services:
     cap_add:
       - SYS_ADMIN
     volumes:
-      - ${ANYTHINGLLM_DATA_PATH}:/app/server/storage
+      - ${ANYTHINGLLM_DATA}:/app/server/storage
       - ${ANYTHINGLLM_ENV_FILE}:/app/server/.env
     environment:
       STORAGE_DIR: /app/server/storage

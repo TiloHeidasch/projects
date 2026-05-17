@@ -22,7 +22,7 @@ services:
     volumes:
       - ${BACKREST_CONFIG_PATH}:/config
       - ${BACKREST_CACHE_PATH}:/cache
-      - ${BACKREST_DATA_PATH}:/data
+      - ${BACKREST_DATA}:/data
       - ${BACKREST_REPOS_PATH}:/repos
       - ${BACKREST_SSH_PATH}:/root/.ssh
       - ${BACKUP_SOURCE_PATH}:/backup:ro
