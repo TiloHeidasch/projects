@@ -130,6 +130,7 @@ ANOTHER_VAR=your_value_here
 - **Non-secret defaults** → Use actual values (e.g., `PUID=99`, `POSTGRES_DB=paperless`)
 - **One blank line** between sections
 - **Comments only where necessary** (e.g., explaining a non-obvious default)
+- **Never comment out variables** in `.env.example` even when their service is disabled in `compose.yaml`. Only remove from `.env.example` when the service is completely removed from the stack.
 
 ---
 
