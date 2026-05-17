@@ -12,10 +12,12 @@ Docker Compose project stacks for Unraid, managed via the [Compose Manager Plugi
 projects/
 ├── .gitignore
 ├── README.md
-├── start-all.sh          # Start all stacks
-├── sync.sh               # Git pull latest
-├── update-all.sh         # Sync + Start all
-├── sync-env.sh           # Sync .env files from .env.example
+├── 00_sync.sh               # Git pull latest
+├── 01_sync-env-dry-run.sh   # Preview .env changes
+├── 02_sync-env.sh           # Apply .env changes
+├── 10_start-all.sh          # Start all stacks
+├── 99_all.sh                # Full pipeline: sync → env → start
+├── helper_sync_env.sh       # Core sync-env logic (called by 01/02)
 ├── <stack>/
 │   ├── compose.yaml           # Main compose file (tracked)
 │   ├── compose.override.yaml  # Unraid labels (plugin-managed, tracked)
@@ -308,15 +310,33 @@ deploy:
 
 ## Scripts
 
-### `sync.sh`
+Scripts are numbered to indicate execution order. Always run with `bash script.sh`.
 
-Pulls the latest version from Git.
+### `00_sync.sh`
+
+Pulls the latest version from Git. Git is the single source of truth — discards all local changes.
 
 ```bash
-bash sync.sh
+bash 00_sync.sh
 ```
 
-### `start-all.sh`
+### `01_sync-env-dry-run.sh`
+
+Previews `.env` changes without modifying anything. Use this first after pulling updates.
+
+```bash
+bash 01_sync-env-dry-run.sh
+```
+
+### `02_sync-env.sh`
+
+Applies `.env` changes from `.env.example` files. Backs up existing `.env` files before replacing.
+
+```bash
+bash 02_sync-env.sh
+```
+
+### `10_start-all.sh`
 
 Starts all compose stacks:
 - Loads both `compose.yaml` and `compose.override.yaml`
@@ -325,21 +345,21 @@ Starts all compose stacks:
 - Updates `started_at` timestamp only when containers actually change
 
 ```bash
-bash start-all.sh
+bash 10_start-all.sh
 ```
 
-### `update-all.sh`
+### `99_all.sh`
 
-Runs `sync.sh` then `start-all.sh` in sequence.
+Full pipeline — runs `00_sync.sh` → `02_sync-env.sh` → `10_start-all.sh` in sequence. Continues on failure and shows a summary report at the end.
 
 ```bash
-bash update-all.sh
+bash 99_all.sh
 ```
 
 ### Important Notes
 
 - Scripts **cannot be made executable** on Unraid's FAT32 boot USB – always run with `bash script.sh`
-- `start-all.sh` tracks `started_at` by comparing container start times before/after `up`. Only updates if containers actually changed.
+- `10_start-all.sh` tracks `started_at` by comparing container start times before/after `up`. Only updates if containers actually changed.
 
 ---
 
@@ -367,7 +387,7 @@ bash update-all.sh
 | `compose.override.yaml` | Unraid labels |
 | `.env.example` | Template |
 | `autostart`, `icon_url`, `name` | Unraid config |
-| `start-all.sh`, `sync.sh`, `update-all.sh`, `sync-env.sh` | Scripts |
+| `00_sync.sh`, `01_sync-env-dry-run.sh`, `02_sync-env.sh`, `10_start-all.sh`, `99_all.sh`, `helper_sync_env.sh` | Scripts |
 
 ---
 
