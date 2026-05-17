@@ -15,11 +15,13 @@ projects/
 ├── start-all.sh          # Start all stacks
 ├── sync.sh               # Git pull latest
 ├── update-all.sh         # Sync + Start all
+├── sync-env.sh           # Sync .env files from .env.example
 ├── <stack>/
 │   ├── compose.yaml           # Main compose file (tracked)
 │   ├── compose.override.yaml  # Unraid labels (plugin-managed, tracked)
 │   ├── .env.example           # Template with placeholders (tracked)
 │   ├── .env                   # Actual secrets (NOT tracked)
+│   ├── .env.bck.*             # Backups (NOT tracked)
 │   ├── autostart              # Unraid-specific (tracked)
 │   ├── icon_url               # Unraid-specific (tracked)
 │   └── name                   # Unraid-specific (tracked)
@@ -347,6 +349,7 @@ bash update-all.sh
 | Pattern | Reason |
 |---|---|
 | `.env` | Contains secrets |
+| `.env.bck.*` | Backups of old .env files |
 | `last_cmd.log` | Runtime log |
 | `last_result.json` | Runtime state |
 | `started_at` | Runtime timestamp |
@@ -363,7 +366,7 @@ bash update-all.sh
 | `compose.override.yaml` | Unraid labels |
 | `.env.example` | Template |
 | `autostart`, `icon_url`, `name` | Unraid config |
-| `start-all.sh`, `sync.sh`, `update-all.sh` | Scripts |
+| `start-all.sh`, `sync.sh`, `update-all.sh`, `sync-env.sh` | Scripts |
 
 ---
 
@@ -418,14 +421,36 @@ When adding a new service, verify:
 
 ## Syncing .env Files on Server
 
-When `.env.example` changes (new variables added), sync to existing `.env` files:
+When `.env.example` changes (new variables added, old ones removed), sync to existing `.env` files:
 
 ```bash
-# Create sync-env.sh on the server (not in repo)
+# Sync all stacks
 bash sync-env.sh
+
+# Preview changes without modifying anything
+bash sync-env.sh --dry-run
 ```
 
-This script:
-- Adds new variables from `.env.example` to `.env` (with `your_value_here`)
-- Preserves existing values (never overwrites)
-- Preserves old variables not in `.env.example` (never deletes)
+### Behavior
+
+For each stack directory:
+
+| Scenario | Action |
+|---|---|
+| `.env` does not exist | Created from `.env.example` |
+| New variable in `.env.example` | Added with default value |
+| Existing variable | Value preserved |
+| Variable removed from `.env.example` | Moved to end as `#!weggefallen-{timestamp} KEY=VALUE` |
+| Previously removed variable re-added | Old value restored from `#!weggefallen-*` entry |
+
+### Backup
+
+Before replacing `.env`, the existing file is renamed to `.env.bck.{YYYY-MM-DD_HH-MM-SS}`. Backups are ignored by Git.
+
+### Exit Codes
+
+| Code | Meaning |
+|---|---|
+| `0` | No changes needed |
+| `1` | Changes applied (or would be applied in dry-run) |
+| `2` | Error |

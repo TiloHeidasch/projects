@@ -1,5 +1,6 @@
 # Secrets
 .env
+.env.bck.*
 
 # Runtime files (generated on each run)
 last_cmd.log
