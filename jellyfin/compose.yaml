@@ -21,6 +21,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - br0
     healthcheck:
       test: curl -f http://localhost:8096/health || exit 1
       interval: 30s
@@ -273,3 +276,7 @@ services:
       resources:
         limits:
           cpus: "2"
+
+networks:
+  br0:
+    external: true
