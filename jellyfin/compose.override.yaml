@@ -3,7 +3,7 @@ services:
     labels:
       net.unraid.docker.managed: 'composeman'
       net.unraid.docker.icon: 'https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/jellyfin-logo.png'
-      net.unraid.docker.webui: ''
+      net.unraid.docker.webui: 'http://[IP]:[PORT:8096]/'
       net.unraid.docker.shell: ''
   cloudflared:
     labels:
@@ -15,25 +15,25 @@ services:
     labels:
       net.unraid.docker.managed: 'composeman'
       net.unraid.docker.icon: 'https://burgiplexhub.org/static/radarr-icon.png'
-      net.unraid.docker.webui: ''
+      net.unraid.docker.webui: 'http://[IP]:[PORT:7878]/'
       net.unraid.docker.shell: ''
   sonarr:
     labels:
       net.unraid.docker.managed: 'composeman'
       net.unraid.docker.icon: 'https://burgiplexhub.org/static/sonarr-icon.png'
-      net.unraid.docker.webui: ''
+      net.unraid.docker.webui: 'http://[IP]:[PORT:8989]/'
       net.unraid.docker.shell: ''
   prowlarr:
     labels:
       net.unraid.docker.managed: 'composeman'
       net.unraid.docker.icon: 'https://burgiplexhub.org/static/prowlarr-icon.png'
-      net.unraid.docker.webui: ''
+      net.unraid.docker.webui: 'http://[IP]:[PORT:9696]/'
       net.unraid.docker.shell: ''
   sabnzbd:
     labels:
       net.unraid.docker.managed: 'composeman'
       net.unraid.docker.icon: 'https://raw.githubusercontent.com/sabnzbd/sabnzbd/refs/heads/develop/icons/sabnzbd.ico'
-      net.unraid.docker.webui: ''
+      net.unraid.docker.webui: 'http://[IP]:[PORT:8085]/'
       net.unraid.docker.shell: ''
   gluetun:
     labels:
@@ -45,5 +45,5 @@ services:
     labels:
       net.unraid.docker.managed: 'composeman'
       net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/seerr.png'
-      net.unraid.docker.webui: ''
+      net.unraid.docker.webui: 'http://[IP]:[PORT:5055]/'
       net.unraid.docker.shell: ''
