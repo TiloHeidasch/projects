@@ -252,19 +252,17 @@ services:
 #      - UN_RADARR_0_TIMEOUT=10s
 
   # ---------------------------------------------------------
-  # JELLYSEERR
+  # SEERR
   # ---------------------------------------------------------
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
     restart: unless-stopped
     init: true
     volumes:
-      - ${BASE_PATH}/jellyseerr/config:/app/config
+      - ${BASE_PATH}/seerr/config:/app/config
     ports:
       - 5055:5055
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
       - TZ=${TZ}
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1

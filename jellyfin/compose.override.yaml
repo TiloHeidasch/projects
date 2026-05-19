@@ -41,9 +41,9 @@ services:
       net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/gluetun.webp'
       net.unraid.docker.webui: ''
       net.unraid.docker.shell: ''
-  jellyseerr:
+  seerr:
     labels:
       net.unraid.docker.managed: 'composeman'
-      net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyseerr.png'
+      net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/seerr.png'
       net.unraid.docker.webui: ''
       net.unraid.docker.shell: ''
