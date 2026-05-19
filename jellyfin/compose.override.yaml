@@ -29,6 +29,12 @@ services:
       net.unraid.docker.icon: 'https://burgiplexhub.org/static/prowlarr-icon.png'
       net.unraid.docker.webui: 'http://[IP]:[PORT:9696]/'
       net.unraid.docker.shell: ''
+  bazarr:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/bazarr-logo.png'
+      net.unraid.docker.webui: 'http://[IP]:[PORT:6767]/'
+      net.unraid.docker.shell: ''
   sabnzbd:
     labels:
       net.unraid.docker.managed: 'composeman'
