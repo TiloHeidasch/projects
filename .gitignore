@@ -7,6 +7,7 @@ last_cmd.log
 last_result.json
 started_at
 has_build
+webui_url
 version
 
 # Docker Compose lock files

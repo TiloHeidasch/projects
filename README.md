@@ -375,6 +375,7 @@ bash 99_all.sh
 | `last_result.json` | Runtime state |
 | `started_at` | Runtime timestamp |
 | `has_build` | Runtime flag |
+| `webui_url` | Runtime URL |
 | `version` | Runtime version |
 | `.compose.lock` | Docker Compose lock file (machine-specific) |
 
@@ -385,7 +386,7 @@ bash 99_all.sh
 | `compose.yaml` | Main compose file |
 | `compose.override.yaml` | Unraid labels |
 | `.env.example` | Template |
-| `autostart`, `icon_url`, `name`, `webui_url` | Unraid config |
+| `autostart`, `icon_url`, `name` | Unraid config |
 | `00_sync.sh`, `01_sync-env-dry-run.sh`, `02_sync-env.sh`, `10_start-all.sh`, `99_all.sh`, `helper_sync_env.sh` | Scripts |
 
 ---
