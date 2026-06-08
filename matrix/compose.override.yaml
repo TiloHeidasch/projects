@@ -1,0 +1,31 @@
+services:
+  cloudflared:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/cloudflare.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  redis:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/redis.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  database:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/postgres.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  synapse:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/synapse.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  element-web:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/element.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
