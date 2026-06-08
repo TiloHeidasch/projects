@@ -90,6 +90,8 @@ services:
     restart: unless-stopped
     volumes:
       - ${BASE_PATH}/matrix/element/config.json:/app/config.json:ro
+    ports:
+      - "8080:80"
     healthcheck:
       test: curl -f http://localhost:80/ || exit 1
       interval: 30s
