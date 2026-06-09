@@ -29,3 +29,15 @@ services:
       net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/element.png'
       net.unraid.docker.webui: 'http://[IP]:[PORT:8080]/'
       net.unraid.docker.shell: ''
+  mautrix-whatsapp:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/whatsapp.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  mautrix-signal:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/signal.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''

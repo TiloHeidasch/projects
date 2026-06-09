@@ -102,3 +102,35 @@ services:
       resources:
         limits:
           cpus: "2"
+
+  # ---------------------------------------------------------
+  # MAUTRIX WHATSAPP BRIDGE
+  # ---------------------------------------------------------
+  mautrix-whatsapp:
+    image: dock.mau.dev/mautrix/whatsapp:latest
+    restart: unless-stopped
+    volumes:
+      - ${BASE_PATH}/matrix/mautrix-whatsapp:/data
+    depends_on:
+      synapse:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # MAUTRIX SIGNAL BRIDGE
+  # ---------------------------------------------------------
+  mautrix-signal:
+    image: dock.mau.dev/mautrix/signal:latest
+    restart: unless-stopped
+    volumes:
+      - ${BASE_PATH}/matrix/mautrix-signal:/data
+    depends_on:
+      synapse:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
