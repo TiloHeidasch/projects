@@ -111,8 +111,13 @@ services:
     restart: unless-stopped
     volumes:
       - ${BASE_PATH}/matrix/mautrix-whatsapp:/data
+    environment:
+      - APPSERVICE_DATABASE_TYPE=postgres
+      - APPSERVICE_DATABASE_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${MAUTRIX_WHATSAPP_DB:-mautrix_whatsapp}?sslmode=disable
     depends_on:
       synapse:
+        condition: service_healthy
+      database:
         condition: service_healthy
     deploy:
       resources:
@@ -127,8 +132,13 @@ services:
     restart: unless-stopped
     volumes:
       - ${BASE_PATH}/matrix/mautrix-signal:/data
+    environment:
+      - APPSERVICE_DATABASE_TYPE=postgres
+      - APPSERVICE_DATABASE_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${MAUTRIX_SIGNAL_DB:-mautrix_signal}?sslmode=disable
     depends_on:
       synapse:
+        condition: service_healthy
+      database:
         condition: service_healthy
     deploy:
       resources:
