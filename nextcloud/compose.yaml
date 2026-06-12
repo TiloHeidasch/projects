@@ -93,6 +93,8 @@ services:
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_PORT=${MAIL_PORT}
+      - OVERWRITEPROTOCOL=https
+      - TRUSTED_PROXIES=172.16.0.0/12
     depends_on:
       database:
         condition: service_healthy
