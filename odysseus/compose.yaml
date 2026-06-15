@@ -31,7 +31,7 @@ services:
       - ${ODYSSEUS_DATA}/huggingface:/app/.cache/huggingface
       - ${ODYSSEUS_DATA}/local:/app/.local
     ports:
-      - "127.0.0.1:7000:7000"
+      - "7000:7000"
     environment:
       - LLM_HOST=${LLM_HOST:-localhost}
       - LLM_HOSTS=${LLM_HOSTS:-}
