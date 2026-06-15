@@ -1,0 +1,140 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # ODYSSEUS
+  # ---------------------------------------------------------
+  odysseus:
+    image: odysseus:local
+    build:
+      context: ./build-src
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${ODYSSEUS_DATA}/data:/app/data
+      - ${ODYSSEUS_DATA}/logs:/app/logs
+      - ${ODYSSEUS_DATA}/ssh:/app/.ssh
+      - ${ODYSSEUS_DATA}/huggingface:/app/.cache/huggingface
+      - ${ODYSSEUS_DATA}/local:/app/.local
+    ports:
+      - "127.0.0.1:7000:7000"
+    environment:
+      - LLM_HOST=${LLM_HOST:-localhost}
+      - LLM_HOSTS=${LLM_HOSTS:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - SEARXNG_INSTANCE=http://searxng:8080
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
+      - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - ODYSSEUS_ADMIN_USER=${ODYSSEUS_ADMIN_USER:-admin}
+      - ODYSSEUS_ADMIN_PASSWORD=${ODYSSEUS_ADMIN_PASSWORD:-}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:7000,http://127.0.0.1:7000}
+      - SECURE_COOKIES=${SECURE_COOKIES:-false}
+      - PUID=${PUID:-99}
+      - PGID=${PGID:-100}
+      - TZ=${TZ:-Europe/Berlin}
+    depends_on:
+      chromadb:
+        condition: service_started
+      searxng:
+        condition: service_healthy
+    healthcheck:
+      test: curl -sf http://localhost:7000/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "7"
+
+  # ---------------------------------------------------------
+  # CHROMADB
+  # ---------------------------------------------------------
+  chromadb:
+    image: docker.io/chromadb/chroma:latest
+    restart: unless-stopped
+    volumes:
+      - ${ODYSSEUS_DATA}/chroma:/chroma/chroma
+    environment:
+      - ANONYMIZED_TELEMETRY=FALSE
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # SEARXNG
+  # ---------------------------------------------------------
+  searxng:
+    image: docker.io/searxng/searxng:2026.5.31-7159b8aed
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -eu
+        if [ ! -s /etc/searxng/settings.yml ] || grep -q 'odysseus-local-searxng-json-2026-05-30\|__SEARXNG_SECRET__' /etc/searxng/settings.yml; then
+          secret="$${SEARXNG_SECRET:-}"
+          if [ -z "$$secret" ]; then
+            secret="$$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
+          fi
+          sed "s|__SEARXNG_SECRET__|$$secret|g" /tmp/searxng-settings.yml.template > /etc/searxng/settings.yml
+        fi
+        exec /usr/local/searxng/entrypoint.sh
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    volumes:
+      - ${ODYSSEUS_DATA}/searxng:/etc/searxng
+      - ./config/searxng/settings.yml:/tmp/searxng-settings.yml.template:ro
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8080/
+      - SEARXNG_SECRET=${SEARXNG_SECRET:-}
+    healthcheck:
+      test: python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/', timeout=5).read(1)" || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # NTFY
+  # ---------------------------------------------------------
+  ntfy:
+    image: docker.io/binwiederhier/ntfy
+    restart: unless-stopped
+    command: serve
+    volumes:
+      - ${ODYSSEUS_DATA}/ntfy:/var/cache/ntfy
+    environment:
+      - NTFY_BASE_URL=${NTFY_BASE_URL:-http://localhost:8091}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"

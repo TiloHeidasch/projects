@@ -22,7 +22,7 @@ for dir in "$PROJECTS_DIR"/*/; do
     OLD_TIMES=$(docker compose -f "$dir/compose.yaml" -f "$dir/compose.override.yaml" ps -q 2>/dev/null | xargs -r docker inspect --format='{{.State.StartedAt}}' 2>/dev/null | sort)
   fi
 
-  docker compose -f "$dir/compose.yaml" -f "$dir/compose.override.yaml" up -d --pull always --remove-orphans
+  docker compose -f "$dir/compose.yaml" -f "$dir/compose.override.yaml" up -d --pull always --build --remove-orphans
 
   if [ $? -eq 0 ]; then
     echo "✓ $project started successfully"

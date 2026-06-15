@@ -12,3 +12,6 @@ version
 
 # Docker Compose lock files
 .compose.lock
+
+# Build source directories (cloned repos for build-from-source stacks)
+odysseus/build-src/

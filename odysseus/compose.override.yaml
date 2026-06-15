@@ -1,0 +1,31 @@
+services:
+  cloudflared:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/cloudflare.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  odysseus:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/pewdiepie-archdaemon/odysseus/refs/heads/dev/docs/odysseus.jpg'
+      net.unraid.docker.webui: 'http://[IP]:7000'
+      net.unraid.docker.shell: ''
+  chromadb:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/chromadb.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  searxng:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/searxng.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+  ntfy:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/ntfy.png'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
