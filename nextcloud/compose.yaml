@@ -94,7 +94,6 @@ services:
         condition: service_healthy
       broker:
         condition: service_healthy
-      collabora:
     healthcheck:
       test: curl -f http://localhost/status.php || exit 1
       interval: 30s
