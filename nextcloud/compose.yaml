@@ -59,12 +59,6 @@ services:
       - aliasgroup1=${COLLABORA_ALIAS_GROUP}
       - DONT_GEN_SSL_CERT=YES
       - extra_params=--o:ssl.enable=false --o:ssl.termination=true
-    healthcheck:
-      test: curl -f http://localhost:9980/hosting/discovery || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
     deploy:
       resources:
         limits:
@@ -101,7 +95,6 @@ services:
       broker:
         condition: service_healthy
       collabora:
-        condition: service_healthy
     healthcheck:
       test: curl -f http://localhost/status.php || exit 1
       interval: 30s
