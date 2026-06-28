@@ -1,11 +1,11 @@
 # AGENTS.md — Unraid Compose Projects
 
-Docker Compose stacks for Unraid (Compose Manager Plugin). **No code, no build, no tests.**
+Docker Compose stacks for Unraid (Compose Manager Plugin). **YAML + bash only.**
 
 ## Key Facts
 
-- **No CI, no linter, no formatter, no typecheck** – validate by eye against `README.md`
-- **No package manager** – this is YAML + bash only
+- **No CI, no linter, no formatter, no typecheck** – review changes manually
+- **No package manager**
 - **Scripts cannot be `chmod +x`** (FAT32 boot USB). Always run: `bash 00_sync.sh`
 - **Git is single source of truth** – `00_sync.sh` does `git reset --hard origin/main`, discarding all local changes
 - **Secrets never committed** – `.env` is gitignored; edit `.env.example` only
@@ -21,7 +21,21 @@ bash 01_sync-env-dry-run.sh
 bash 99_all.sh                        # sync → env → start (continues on failure)
 ```
 
-Start-all loads both `compose.yaml` and `compose.override.yaml` with `--pull always --remove-orphans`.
+Start-all loads both `compose.yaml` and `compose.override.yaml` with `--pull always --build --remove-orphans`.
+
+## Build-From-Source (odysseus)
+
+`odysseus/compose.yaml` uses `build: ./build-src` — source must be cloned first:
+```
+bash odysseus/build.sh
+bash 99_all.sh
+```
+`build-src/` is gitignored; `odysseus/build.sh` handles clone/pull.
+
+## Additional Scripts
+
+- `11_recreate_all.sh` – `--force-recreate` all stacks (useful after config changes)
+- `helper_sync_env.sh` – core sync-env logic, called by `01_sync-env-dry-run.sh` and `02_sync-env.sh`
 
 ## compose.yaml Style (non-negotiable)
 
