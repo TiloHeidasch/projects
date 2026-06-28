@@ -38,6 +38,7 @@ projects/
 | `documents_eltern` | (same as above) | Paperless-ngx instance |
 | `documents_jens` | (same as above) | Paperless-ngx instance |
 | `documents_tilo` | (same as above) | Paperless-ngx instance |
+| `hermes` | hermes | AI Agent (Gateway + Dashboard) |
 | `homeautomation` | cloudflared, mosquitto, nodered | IoT / Home Automation |
 | `immich` | cloudflared, immich-server, immich-machine-learning, broker, database | Photo management |
 | `jdownloader` | cloudflared, jdownloader | Download manager |
