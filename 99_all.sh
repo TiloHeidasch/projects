@@ -26,9 +26,13 @@ echo "=== Running 10_start-all.sh ==="
 run_step "10_start-all" "10_start-all.sh"
 echo ""
 
+echo "=== Running 15_image-prune.sh ==="
+run_step "15_image-prune" "15_image_prune.sh"
+echo ""
+
 echo "================================"
 echo "=== Summary ==="
-for step in "00_sync" "02_sync-env" "10_start-all"; do
+for step in "00_sync" "02_sync-env" "10_start-all" "15_image-prune"; do
   printf "%-20s %s\n" "$step:" "${results[$step]}"
 done
 
