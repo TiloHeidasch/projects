@@ -1,0 +1,38 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # CODE-SERVER (VS Code in Browser)
+  # ---------------------------------------------------------
+  code-server:
+    image: ghcr.io/coder/code-server:latest
+    restart: unless-stopped
+    volumes:
+      - ${CODE_SERVER_CONFIG}:/home/coder/.config/code-server
+      - ${CODE_SERVER_WORKSPACE}:/home/coder/workspace
+    ports:
+      - 8443:8080
+    environment:
+      - TZ=${TZ}
+    healthcheck:
+      test: curl -f http://localhost:8080/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "7"
