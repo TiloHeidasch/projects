@@ -20,7 +20,18 @@ services:
     image: ghcr.io/coder/code-server:latest
     restart: unless-stopped
     user: "99:100"
-    command: ["--bind-addr", "0.0.0.0:8080", "/home/coder/workspace"]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if ! command -v npm >/dev/null 2>&1; then
+          if [ ! -x /home/coder/.npm-global/bin/node ]; then
+            curl -fsSL https://nodejs.org/dist/v24.18.0/node-v24.18.0-linux-x64.tar.gz \
+              | tar -xz -C /home/coder/.npm-global/
+            ln -sf /home/coder/.npm-global/node-v24.18.0-linux-x64/bin/* /home/coder/.npm-global/bin/
+          fi
+          export PATH="/home/coder/.npm-global/bin:$PATH"
+        fi
+        exec /usr/bin/entrypoint.sh --bind-addr 0.0.0.0:8080 /home/coder/workspace
     volumes:
       - ${CODE_SERVER_CONFIG}:/home/coder/.config/code-server
       - ${CODE_SERVER_WORKSPACE}:/home/coder/workspace
