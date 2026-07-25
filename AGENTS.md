@@ -23,15 +23,6 @@ bash 99_all.sh                        # sync → env → start (continues on fai
 
 Start-all loads both `compose.yaml` and `compose.override.yaml` with `--pull always --build --remove-orphans`.
 
-## Build-From-Source (odysseus)
-
-`odysseus/compose.yaml` uses `build: ./build-src` — source must be cloned first:
-```
-bash odysseus/build.sh
-bash 99_all.sh
-```
-`build-src/` is gitignored; `odysseus/build.sh` handles clone/pull.
-
 ## Additional Scripts
 
 - `11_recreate_all.sh` – `--force-recreate` all stacks (useful after config changes)

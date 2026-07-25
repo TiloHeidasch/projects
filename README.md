@@ -33,7 +33,6 @@ projects/
 
 | Stack | Services | Purpose |
 |---|---|---|
-| `anythingllm` | cloudflared, anythingllm | Local LLM interface |
 | `documents_bine` | cloudflared, broker, gotenberg, tika, db, paperless | Paperless-ngx instance |
 | `documents_eltern` | (same as above) | Paperless-ngx instance |
 | `documents_jens` | (same as above) | Paperless-ngx instance |
@@ -230,7 +229,6 @@ CPU limits prevent any single service from monopolizing all 8 threads (AMD 3400G
 | `gotenberg` (4x) | Chromium-based, can spike |
 | `collabora` | Only active when editing documents |
 | `open-webui` | LLM requests are external |
-| `anythingllm` | LLM is external |
 | `database` (all 6x Postgres) | Must stay responsive |
 
 ### Tier 3: 2 CPUs (Light)
@@ -300,8 +298,6 @@ deploy:
 | `paperless` | `/accounts/login/` | 8000 |
 | `open-webui` | `/health` | 8080 |
 | `vaultwarden` | `/alive` | 80 |
-| `immich-server` | `/api/server-info/ping` | 2283 |
-| `anythingllm` | `/` | 3001 |
 | `dozzle` | `/` | 8080 |
 | `jdownloader` | `/` | 5800 |
 | `nodered` | `/` | 1880 |
