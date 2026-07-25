@@ -24,10 +24,12 @@ services:
     volumes:
       - ${CODE_SERVER_CONFIG}:/home/coder/.config/code-server
       - ${CODE_SERVER_WORKSPACE}:/home/coder/workspace
+      - ${CODE_SERVER_NPM_GLOBAL}:/home/coder/.npm-global
     ports:
       - 8443:8080
     environment:
       - TZ=${TZ}
+      - NPM_CONFIG_PREFIX=/home/coder/.npm-global
     healthcheck:
       test: curl -f http://localhost:8080/ || exit 1
       interval: 30s
