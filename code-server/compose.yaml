@@ -20,6 +20,7 @@ services:
     image: ghcr.io/coder/code-server:latest
     restart: unless-stopped
     user: "99:100"
+    command: ["--bind-addr", "0.0.0.0:8080", "/home/coder/workspace"]
     volumes:
       - ${CODE_SERVER_CONFIG}:/home/coder/.config/code-server
       - ${CODE_SERVER_WORKSPACE}:/home/coder/workspace
