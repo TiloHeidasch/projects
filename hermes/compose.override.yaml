@@ -1,7 +1,0 @@
-services:
-  hermes:
-    labels:
-      net.unraid.docker.managed: 'composeman'
-      net.unraid.docker.icon: 'https://raw.githubusercontent.com/NousResearch/hermes-agent/main/apps/desktop/assets/icon.png'
-      net.unraid.docker.webui: ''
-      net.unraid.docker.shell: ''
