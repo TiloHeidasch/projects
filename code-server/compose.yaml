@@ -1,0 +1,47 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # CODE-SERVER (VS Code in Browser)
+  # ---------------------------------------------------------
+  code-server:
+    image: ghcr.io/coder/code-server:latest
+    restart: unless-stopped
+    user: "99:100"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if ! command -v opencode >/dev/null 2>&1; then
+          apt-get update -qq && apt-get install -y -qq nodejs npm
+          npm install -g opencode
+        fi
+        exec /usr/bin/entrypoint.sh --bind-addr 0.0.0.0:8080 /home/coder/workspace
+    volumes:
+      - ${CODE_SERVER_CONFIG}:/home/coder/.config/code-server
+      - ${CODE_SERVER_WORKSPACE}:/home/coder/workspace
+    ports:
+      - 8443:8080
+    environment:
+      - TZ=${TZ}
+    healthcheck:
+      test: curl -f http://localhost:8080/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "7"
