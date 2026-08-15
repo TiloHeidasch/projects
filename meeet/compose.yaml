@@ -3,19 +3,9 @@ services:
   # CLOUDFLARE TUNNEL
   # ---------------------------------------------------------
   cloudflared:
-    image: ${CLOUDFLARED_IMAGE}
+    image: cloudflare/cloudflared:latest
     restart: unless-stopped
-    user: "65532:65532"
-    init: true
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    pids_limit: 64
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=16m
-    command: tunnel --no-autoupdate run
+    command: tunnel run
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     depends_on:
@@ -38,7 +28,6 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    pids_limit: 128
     mem_limit: 4g
     memswap_limit: 4g
     tmpfs:
