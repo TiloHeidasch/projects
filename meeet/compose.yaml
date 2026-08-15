@@ -10,7 +10,7 @@ services:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     depends_on:
       meeet:
-        condition: service_healthy
+        condition: service_started
     deploy:
       resources:
         limits:
@@ -34,20 +34,6 @@ services:
       MEEET_PROVIDER_MODE: configured
       MEEET_PROVIDER_DEPLOYMENT: managed
       MEEET_SCHEDULE_ARTIFACT_PATH: /opt/meeet/schedule/mvv-scheduled-artifact.json
-    healthcheck:
-      test:
-        - CMD
-        - node
-        - -e
-        - >-
-          fetch("http://127.0.0.1:3000/api/health/ready")
-          .then((response) => process.exit(response.ok ? 0 : 1))
-          .catch(() => process.exit(1))
-      interval: 30s
-      start_interval: 5s
-      timeout: 10s
-      start_period: 60s
-      retries: 5
     deploy:
       resources:
         limits:
