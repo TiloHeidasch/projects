@@ -47,6 +47,8 @@ projects/
 | `open_webui` | cloudflared, open-webui | Open WebUI (Ollama frontend) |
 | `vaultwarden` | cloudflared, vaultwarden | Password manager |
 
+Meeet operations: [meeet/OPERATIONS.md](meeet/OPERATIONS.md).
+
 ---
 
 ## compose.yaml Conventions
