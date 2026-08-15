@@ -47,10 +47,10 @@ Meeet after updating the artifact pair.
 
 ## Startup and troubleshooting
 
-Cloudflared waits for Meeet to become healthy. Meeet has a 60-second startup
-grace period; its ready endpoint is checked every 30 seconds with a 10-second
-timeout and 5 retries. A missing, unreadable, or invalid artifact pair keeps
-Meeet unhealthy and leaves the Tunnel unavailable.
+Cloudflared waits for Meeet to become healthy. Meeet's ready endpoint is checked
+every 5 seconds during its 60-second startup period and every 30 seconds
+afterwards, with a 10-second timeout and 5 retries. A missing, unreadable, or
+invalid artifact pair keeps Meeet unhealthy and leaves the Tunnel unavailable.
 
 The configured CPU limits are 7 for Meeet and 2 for cloudflared. Memory is
 controlled by host policy.
