@@ -41,6 +41,7 @@ projects/
 | `immich` | cloudflared, immich-server, immich-machine-learning, broker, database | Photo management |
 | `jdownloader` | cloudflared, jdownloader | Download manager |
 | `jellyfin` | jellyfin, cloudflared, radarr, sonarr, prowlarr, sabnzbd, gluetun, jellyseerr | Media server + *arr stack |
+| `meeet` | cloudflared, meeet | Two-participant Munich meeting coordination |
 | `monitoring` | dozzle | Docker logs UI |
 | `nextcloud` | cloudflared, broker, database, collabora, nextcloud | Cloud storage + office |
 | `open_webui` | cloudflared, open-webui | Open WebUI (Ollama frontend) |
