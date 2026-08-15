@@ -22,16 +22,6 @@ services:
   meeet:
     image: ${MEEET_IMAGE}
     restart: unless-stopped
-    init: true
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    mem_limit: 4g
-    memswap_limit: 4g
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=64m
     volumes:
       - type: bind
         source: ${MEEET_SCHEDULE_HOST_DIR}
@@ -41,18 +31,9 @@ services:
           create_host_path: false
     environment:
       NODE_ENV: production
-      HOSTNAME: 0.0.0.0
-      PORT: "3000"
-      NEXT_TELEMETRY_DISABLED: "1"
       MEEET_PROVIDER_MODE: configured
       MEEET_PROVIDER_DEPLOYMENT: managed
-      MEEET_PROVIDER_TIMEOUT_MS: "4000"
-      MEEET_PROVIDER_MAX_RESPONSE_BYTES: "524288"
-      MEEET_ALLOW_HTTP_PROVIDER_ENDPOINTS: "false"
       MEEET_SCHEDULE_ARTIFACT_PATH: /opt/meeet/schedule/mvv-scheduled-artifact.json
-      MEEET_SCHEDULED_CONCURRENCY: "1"
-      MEEET_SCHEDULED_DEADLINE_MS: "90000"
-      MEEET_SCHEDULED_MIN_MEMORY_GIB: "4"
     healthcheck:
       test:
         - CMD
@@ -64,11 +45,9 @@ services:
           .catch(() => process.exit(1))
       interval: 30s
       timeout: 10s
-      start_period: 180s
+      start_period: 60s
       retries: 5
     deploy:
-      replicas: 1
       resources:
         limits:
           cpus: "7"
-          memory: 4G
