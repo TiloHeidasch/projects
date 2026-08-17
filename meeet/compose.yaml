@@ -17,6 +17,26 @@ services:
           cpus: "2"
 
   # ---------------------------------------------------------
+  # SCHEDULE COMPILER (one-shot, runs before meeet starts)
+  # ---------------------------------------------------------
+  # Fetches the latest MVV feed and compiles the scheduled artifact when the
+  # mounted artifact is missing, stale, or built by a different compiler
+  # version; otherwise keeps the current artifact. Always exits 0.
+  compiler:
+    image: ${MEEET_COMPILER_IMAGE}
+    restart: "no"
+    volumes:
+      - type: bind
+        source: ${MEEET_SCHEDULE_HOST_DIR}
+        target: /output
+        bind:
+          create_host_path: false
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
   # MEEET
   # ---------------------------------------------------------
   meeet:
@@ -34,6 +54,9 @@ services:
       MEEET_PROVIDER_MODE: configured
       MEEET_PROVIDER_DEPLOYMENT: managed
       MEEET_SCHEDULE_ARTIFACT_PATH: /opt/meeet/schedule/mvv-scheduled-artifact.json
+    depends_on:
+      compiler:
+        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD
