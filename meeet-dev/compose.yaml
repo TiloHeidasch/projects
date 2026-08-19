@@ -1,0 +1,76 @@
+services:
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      meeet-dev:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # SCHEDULE COMPILER (one-shot, runs before meeet-dev starts)
+  # ---------------------------------------------------------
+  # Fetches the latest MVV feed and compiles the scheduled artifact when the
+  # mounted artifact is missing, stale, or built by a different compiler
+  # version; otherwise keeps the current artifact. Always exits 0.
+  compiler:
+    image: ${MEEET_COMPILER_IMAGE}
+    restart: "no"
+    volumes:
+      - type: bind
+        source: ${MEEET_SCHEDULE_HOST_DIR}
+        target: /output
+        bind:
+          create_host_path: false
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # MEEET
+  # ---------------------------------------------------------
+  meeet-dev:
+    image: ${MEEET_IMAGE}
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${MEEET_SCHEDULE_HOST_DIR}
+        target: /opt/meeet/schedule
+        read_only: true
+        bind:
+          create_host_path: false
+    environment:
+      NODE_ENV: production
+      MEEET_PROVIDER_MODE: configured
+      MEEET_PROVIDER_DEPLOYMENT: managed
+      MEEET_SCHEDULE_ARTIFACT_PATH: /opt/meeet/schedule/mvv-scheduled-artifact.json
+    depends_on:
+      compiler:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch("http://127.0.0.1:3000/api/health/ready")
+          .then((response) => process.exit(response.ok ? 0 : 1))
+          .catch(() => process.exit(1))
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "7"
