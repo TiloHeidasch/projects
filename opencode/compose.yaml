@@ -1,0 +1,28 @@
+services:
+  # ---------------------------------------------------------
+  # OPENCODE
+  # ---------------------------------------------------------
+  opencode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ${OPENCODE_CONFIG_PATH}:/root/.config/opencode
+      - ${OPENCODE_DATA_PATH}:/root/.local/share/opencode
+      - ${OPENCODE_WORKSPACE_PATH}:/workspace
+    ports:
+      - "${OPENCODE_PORT:-4096}:4096"
+    environment:
+      OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD}
+      OPENCODE_SERVER_USERNAME: ${OPENCODE_SERVER_USERNAME:-opencode}
+    healthcheck:
+      test: curl -f http://127.0.0.1:4096/global/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "7"

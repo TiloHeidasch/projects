@@ -1,0 +1,7 @@
+services:
+  opencode:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/anomalyco/opencode/refs/heads/dev/packages/web/public/favicon.svg'
+      net.unraid.docker.webui: 'http://[IP]:[PORT:4096]/'
+      net.unraid.docker.shell: ''
