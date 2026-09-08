@@ -1,5 +1,21 @@
 services:
   # ---------------------------------------------------------
+  # OPENHANDS INIT
+  # ---------------------------------------------------------
+  openhands-init:
+    image: alpine:3.22
+    restart: "no"
+    user: "0:0"
+    volumes:
+      - ${OPENHANDS_DATA_PATH}:/data
+      - ${OPENHANDS_PROJECTS_PATH}:/projects
+    command: chown -R 10001:10001 /data /projects
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
   # OPENHANDS
   # ---------------------------------------------------------
   openhands:
@@ -13,6 +29,9 @@ services:
     environment:
       LOCAL_BACKEND_API_KEY: ${OPENHANDS_LOCAL_BACKEND_API_KEY}
       OH_SECRET_KEY: ${OPENHANDS_SECRET_KEY}
+    depends_on:
+      openhands-init:
+        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD

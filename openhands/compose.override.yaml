@@ -1,4 +1,11 @@
 services:
+  openhands-init:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/OpenHands/OpenHands/main/public/favicon.svg'
+      net.unraid.docker.webui: ''
+      net.unraid.docker.shell: ''
+
   openhands:
     labels:
       net.unraid.docker.managed: 'composeman'
