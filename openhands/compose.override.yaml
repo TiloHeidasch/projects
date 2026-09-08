@@ -1,0 +1,7 @@
+services:
+  openhands:
+    labels:
+      net.unraid.docker.managed: 'composeman'
+      net.unraid.docker.icon: 'https://raw.githubusercontent.com/OpenHands/OpenHands/main/public/favicon.svg'
+      net.unraid.docker.webui: 'http://[IP]:[PORT:8000]/canvas'
+      net.unraid.docker.shell: ''
