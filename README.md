@@ -45,6 +45,7 @@ projects/
 | `monitoring` | dozzle | Docker logs UI |
 | `nextcloud` | cloudflared, broker, database, collabora, nextcloud | Cloud storage + office |
 | `open_webui` | cloudflared, open-webui | Open WebUI (Ollama frontend) |
+| `openhands` | openhands | Self-hosted OpenHands Agent Canvas |
 | `vaultwarden` | cloudflared, vaultwarden | Password manager |
 
 Meeet operations: [meeet/OPERATIONS.md](meeet/OPERATIONS.md).
