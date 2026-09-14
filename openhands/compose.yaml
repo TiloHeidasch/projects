@@ -20,7 +20,7 @@ services:
   # OPENHANDS
   # ---------------------------------------------------------
   openhands:
-    image: ghcr.io/openhands/agent-canvas:1.16.0
+    image: ghcr.io/openhands/agent-canvas:latest
     restart: unless-stopped
     volumes:
       - ${OPENHANDS_DATA_PATH}:/home/openhands/.openhands
