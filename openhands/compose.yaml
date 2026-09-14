@@ -30,7 +30,6 @@ services:
     environment:
       LOCAL_BACKEND_API_KEY: ${OPENHANDS_LOCAL_BACKEND_API_KEY}
       OH_SECRET_KEY: ${OPENHANDS_SECRET_KEY}
-      AUTOMATION_WEBHOOK_SECRET: ${AUTOMATION_WEBHOOK_SECRET}
     healthcheck:
       test:
         - CMD
