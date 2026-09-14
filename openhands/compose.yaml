@@ -29,4 +29,4 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "7"
+          cpus: "2"
