@@ -3,13 +3,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="${SCRIPT_DIR}/.env"
-DIRECT_ENV_FILE=''
 FORCE=false
 
 declare -A ENV_VALUES=()
 declare -A ENV_SEEN=()
-declare -A DIRECT_VALUES=()
-declare -A DIRECT_SEEN=()
 
 die() {
   printf 'configure_swag.sh: %s\n' "$*" >&2
@@ -39,13 +36,12 @@ done
 
 parse_env_file() {
   local file="$1"
-  local kind="$2"
   local line
   local line_number=0
   local key
   local value
 
-  [[ -r "$file" ]] || die "missing readable ${kind} file: ${file}"
+  [[ -r "$file" ]] || die "missing readable .env: ${file}"
 
   while IFS= read -r line || [[ -n "$line" ]]; do
     line_number=$((line_number + 1))
@@ -58,38 +54,22 @@ parse_env_file() {
 
     key="${BASH_REMATCH[1]}"
     value="${BASH_REMATCH[2]}"
+    case "$key" in
+      TUNNEL_TOKEN|SWAG_PUID|SWAG_PGID|SWAG_TZ|SWAG_URL|SWAG_CONFIG|SWAG_EMAIL|SWAG_BIND_ADDRESS|SWAG_HOST_PORT|CF_DNS_API_TOKEN|IMMICH_VERSION|IMMICH_DATA|DB_DATA|MODEL_CACHE|DB_USERNAME|DB_DATABASE_NAME|DB_PASSWORD)
+        ;;
+      *)
+        die "unknown key ${key} in ${file}:${line_number}; update .env.example or remove it"
+        ;;
+    esac
 
-    if [[ "$kind" == ".env" ]]; then
-      case "$key" in
-        IMMICH_TUNNEL_ENV|IMMICH_DIRECT_ENV|SWAG_PUID|SWAG_PGID|SWAG_TZ|SWAG_URL|SWAG_CONFIG|SWAG_EMAIL|SWAG_BIND_ADDRESS|SWAG_HOST_PORT|IMMICH_VERSION|IMMICH_DATA|DB_DATA|MODEL_CACHE|DB_USERNAME|DB_DATABASE_NAME|DB_PASSWORD)
-          ;;
-        *)
-          die "unknown key ${key} in ${file}:${line_number}; update .env.example or remove it"
-          ;;
-      esac
-
-      [[ -z "${ENV_SEEN[$key]+present}" ]] || \
-        die "duplicate key ${key} in ${file}:${line_number}"
-      ENV_SEEN["$key"]=1
-      ENV_VALUES["$key"]="$value"
-    else
-      case "$key" in
-        CF_DNS_API_TOKEN|CF_ZONE_ID|CF_TUNNEL_TARGET|IMMICH_DIRECT_IPV4)
-          ;;
-        *)
-          die "unknown key ${key} in ${file}:${line_number}; direct.env only allows direct DNS keys"
-          ;;
-      esac
-
-      [[ -z "${DIRECT_SEEN[$key]+present}" ]] || \
-        die "duplicate key ${key} in ${file}:${line_number}"
-      DIRECT_SEEN["$key"]=1
-      DIRECT_VALUES["$key"]="$value"
-    fi
+    [[ -z "${ENV_SEEN[$key]+present}" ]] || \
+      die "duplicate key ${key} in ${file}:${line_number}"
+    ENV_SEEN["$key"]=1
+    ENV_VALUES["$key"]="$value"
   done < "$file"
 }
 
-require_env_value() {
+require_value() {
   local key="$1"
   local value
 
@@ -97,18 +77,6 @@ require_env_value() {
   value="${ENV_VALUES[$key]}"
   [[ -n "$value" ]] || die "required key ${key} is empty in ${ENV_FILE}"
   [[ "$value" != "your_value_here" ]] || die "${key} still contains the example placeholder"
-}
-
-require_direct_value() {
-  local key="$1"
-  local value
-
-  [[ -n "${DIRECT_VALUES[$key]+present}" ]] || die "missing required key ${key} in ${DIRECT_ENV_FILE}"
-  value="${DIRECT_VALUES[$key]}"
-  [[ -n "$value" ]] || die "required key ${key} is empty in ${DIRECT_ENV_FILE}"
-  [[ "$value" != "your_value_here" ]] || die "${key} still contains the example placeholder"
-  [[ "$value" != "your_tunnel_id.cfargotunnel.com" ]] || \
-    die "${key} still contains the example placeholder"
 }
 
 validate_hostname() {
@@ -145,20 +113,7 @@ validate_ipv4() {
   done
 }
 
-parse_env_file "$ENV_FILE" ".env"
-
-for required in IMMICH_TUNNEL_ENV IMMICH_DIRECT_ENV; do
-  require_env_value "$required"
-done
-
-IMMICH_TUNNEL_ENV_VALUE="${ENV_VALUES[IMMICH_TUNNEL_ENV]}"
-DIRECT_ENV_FILE="${ENV_VALUES[IMMICH_DIRECT_ENV]}"
-[[ "$IMMICH_TUNNEL_ENV_VALUE" == /* && "$IMMICH_TUNNEL_ENV_VALUE" != "/" ]] || \
-  die "IMMICH_TUNNEL_ENV must be an absolute path other than /"
-[[ "$DIRECT_ENV_FILE" == /* && "$DIRECT_ENV_FILE" != "/" ]] || \
-  die "IMMICH_DIRECT_ENV must be an absolute path other than /"
-
-parse_env_file "$DIRECT_ENV_FILE" "direct.env"
+parse_env_file "$ENV_FILE"
 
 for required in \
   SWAG_PUID \
@@ -168,12 +123,9 @@ for required in \
   SWAG_CONFIG \
   SWAG_EMAIL \
   SWAG_BIND_ADDRESS \
-  SWAG_HOST_PORT; do
-  require_env_value "$required"
-done
-
-for required in CF_DNS_API_TOKEN CF_ZONE_ID CF_TUNNEL_TARGET IMMICH_DIRECT_IPV4; do
-  require_direct_value "$required"
+  SWAG_HOST_PORT \
+  CF_DNS_API_TOKEN; do
+  require_value "$required"
 done
 
 SWAG_PUID_VALUE="${ENV_VALUES[SWAG_PUID]}"
@@ -183,10 +135,7 @@ SWAG_CONFIG_VALUE="${ENV_VALUES[SWAG_CONFIG]}"
 SWAG_EMAIL_VALUE="${ENV_VALUES[SWAG_EMAIL]}"
 SWAG_BIND_ADDRESS_VALUE="${ENV_VALUES[SWAG_BIND_ADDRESS]}"
 SWAG_HOST_PORT_VALUE="${ENV_VALUES[SWAG_HOST_PORT]}"
-CF_DNS_API_TOKEN_VALUE="${DIRECT_VALUES[CF_DNS_API_TOKEN]}"
-CF_ZONE_ID_VALUE="${DIRECT_VALUES[CF_ZONE_ID]}"
-CF_TUNNEL_TARGET_VALUE="${DIRECT_VALUES[CF_TUNNEL_TARGET]}"
-IMMICH_DIRECT_IPV4_VALUE="${DIRECT_VALUES[IMMICH_DIRECT_IPV4]}"
+CF_DNS_API_TOKEN_VALUE="${ENV_VALUES[CF_DNS_API_TOKEN]}"
 
 [[ "$SWAG_PUID_VALUE" =~ ^[0-9]+$ ]] || die "SWAG_PUID must be numeric"
 [[ "$SWAG_PGID_VALUE" =~ ^[0-9]+$ ]] || die "SWAG_PGID must be numeric"
@@ -194,24 +143,19 @@ IMMICH_DIRECT_IPV4_VALUE="${DIRECT_VALUES[IMMICH_DIRECT_IPV4]}"
   die "SWAG_CONFIG must be an absolute directory other than /"
 [[ "$SWAG_EMAIL_VALUE" != *[[:space:]]* ]] || die "SWAG_EMAIL must not contain whitespace"
 [[ "$CF_DNS_API_TOKEN_VALUE" != *[[:space:]]* ]] || die "CF_DNS_API_TOKEN must not contain whitespace"
-[[ "$CF_ZONE_ID_VALUE" =~ ^[A-Fa-f0-9]{32}$ ]] || die "CF_ZONE_ID must be a 32-character hexadecimal zone ID"
 [[ "$SWAG_HOST_PORT_VALUE" =~ ^[0-9]+$ ]] || die "SWAG_HOST_PORT must be numeric"
 ((10#$SWAG_HOST_PORT_VALUE >= 1 && 10#$SWAG_HOST_PORT_VALUE <= 65535)) || \
   die "SWAG_HOST_PORT must be between 1 and 65535"
 
 validate_ipv4 "$SWAG_BIND_ADDRESS_VALUE" "SWAG_BIND_ADDRESS"
-validate_ipv4 "$IMMICH_DIRECT_IPV4_VALUE" "IMMICH_DIRECT_IPV4"
 
 BASE_DOMAIN="${SWAG_URL_VALUE%.}"
 [[ "$BASE_DOMAIN" == *.* ]] || die "SWAG_URL must be a domain name"
 validate_hostname "$BASE_DOMAIN" "SWAG_URL"
-validate_hostname "$CF_TUNNEL_TARGET_VALUE" "CF_TUNNEL_TARGET"
 
 SUBDOMAINS=(photo photo2)
-
 for subdomain in "${SUBDOMAINS[@]}"; do
-  host="${subdomain}.${BASE_DOMAIN}"
-  validate_hostname "$host" "generated hostname"
+  validate_hostname "${subdomain}.${BASE_DOMAIN}" "generated hostname"
 done
 
 DNS_DIR="${SWAG_CONFIG_VALUE}/dns-conf"
@@ -229,13 +173,9 @@ if ! $FORCE; then
 fi
 
 umask 077
-chmod 600 "$DIRECT_ENV_FILE"
 mkdir -p "$DNS_DIR" "$SITE_CONFS_DIR"
 chmod 700 "$SWAG_CONFIG_VALUE" "$DNS_DIR" "$NGINX_DIR" "$SITE_CONFS_DIR"
 
-# On Unraid this script is normally run as root. Matching the container's
-# configured UID/GID keeps generated files usable by SWAG with restrictive
-# permissions. Non-root callers keep their existing ownership.
 if ((EUID == 0)); then
   chown "${SWAG_PUID_VALUE}:${SWAG_PGID_VALUE}" \
     "$SWAG_CONFIG_VALUE" "$DNS_DIR" "$NGINX_DIR" "$SITE_CONFS_DIR"
@@ -261,7 +201,7 @@ printf 'dns_cloudflare_api_token = %s\n' "$CF_DNS_API_TOKEN_VALUE" > "$tmp_dns"
 
 {
   printf '%s\n' '# Generated by configure_swag.sh; do not edit this file directly.'
-  printf '%s\n' '# Exact-host Immich virtual hosts.'
+  printf '%s\n' '# Exact-host Immich virtual host.'
   printf '\n'
   printf 'server {\n'
   printf '    listen 443 ssl;\n'
