@@ -8,8 +8,8 @@ services:
     networks:
       - proxy
     command: tunnel run
-    environment:
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    env_file:
+      - ${IMMICH_TUNNEL_ENV}
     deploy:
       resources:
         limits:
