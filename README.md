@@ -45,7 +45,6 @@ projects/
 | `monitoring` | dozzle | Docker logs UI |
 | `nextcloud` | cloudflared, broker, database, collabora, nextcloud | Cloud storage + office |
 | `open_webui` | cloudflared, open-webui | Open WebUI (Ollama frontend) |
-| `openhands` | openhands | Self-hosted OpenHands Agent Canvas |
 | `vaultwarden` | cloudflared, vaultwarden | Password manager |
 
 Meeet operations: [meeet/OPERATIONS.md](meeet/OPERATIONS.md).
@@ -475,23 +474,3 @@ Before replacing `.env`, the existing file is renamed to `.env.bck.{YYYY-MM-DD_H
 | `0` | No changes needed |
 | `1` | Changes applied (or would be applied in dry-run) |
 | `2` | Error |
-
-## OpenHands standalone automation event receiver
-
-`AUTOMATION_WEBHOOK_SECRET` is injected into the OpenHands service. For this
-local deployment, compute the deterministic, non-secret organization ID with:
-
-```bash
-python3 -c 'import uuid; print(uuid.uuid5(uuid.NAMESPACE_DNS, "openhands-local-org"))'
-```
-
-This produces the stable ID for the local deployment; do not generate it
-randomly. The valid receiver path is
-`POST /api/automation/v1/events/<OPENHANDS_ORG_ID>/github`, and it requires a
-normalized JSON envelope with a top-level `payload` property. A direct native
-GitHub delivery fails with `Missing payload in builtin source request`.
-
-Do not configure this automation endpoint as GitHub's webhook URL. A supported
-normalizing forwarder is required, and that forwarder is not version-controlled
-in this repository. `AUTOMATION_BASE_URL` is not included because this
-repository defines no supported setting for it.
