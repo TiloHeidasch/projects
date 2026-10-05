@@ -36,7 +36,6 @@ services:
       ONLY_SUBDOMAINS: "true"
       VALIDATION: dns
       DNSPLUGIN: cloudflare
-      EMAIL: ${SWAG_EMAIL}
       DISABLE_F2B: "true"
     depends_on:
       immich-server:
