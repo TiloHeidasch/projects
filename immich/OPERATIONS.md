@@ -61,9 +61,8 @@ the exact hosts `photo.<SWAG_URL>` and `photo2.<SWAG_URL>`.
 
 ## DNS and firewall modes
 
-DNS switching is managed outside this repository, either manually in the
-Cloudflare Dashboard or by an authenticated tool you operate. It must maintain
-both records as follows:
+DNS switching is owned by the user's local Cloudflare agent, not by this
+repository. It must maintain both records as follows:
 
 - **Tunnel mode:** `photo` and `photo2` use proxied CNAME records to the
   Cloudflare Tunnel UUID target.
