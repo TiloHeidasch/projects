@@ -1,0 +1,39 @@
+services:
+  # ---------------------------------------------------------
+  # NGINX
+  # ---------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${WEB_ROOT_PATH}
+        target: /usr/share/nginx/html
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && kill -0 $(cat /var/run/nginx.pid)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+
+  # ---------------------------------------------------------
+  # CLOUDFLARE TUNNEL
+  # ---------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    depends_on:
+      nginx:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
